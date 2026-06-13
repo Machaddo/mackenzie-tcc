@@ -1,14 +1,11 @@
 
 # Análise Comparativa de Algoritmos A* Paralelos
 ### Estudo sobre Paralelização do Algoritmo A* em Arquiteturas de Memória Compartilhada
-**Universidade Presbiteriana Mackenzie — Faculdade de Computação e Informática**
-
 ---
 
 ## Visão Geral
 
-Este repositório contém o notebook Python e os dados experimentais do artigo **"Estudo sobre a Paralelização do Algoritmo A* em Arquiteturas de Memória Compartilhada"**, desenvolvido como Trabalho de Conclusão de Curso (TCC II) na FCI Mackenzie.
-
+Este repositório contém o notebook Python e os dados experimentais do TCC.
 O objetivo central é comparar o desempenho de quatro abordagens do algoritmo A* em grids bidimensionais de grande escala:
 
 | Abordagem | Tipo | Threads |
