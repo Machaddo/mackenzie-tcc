@@ -100,16 +100,11 @@ jupyter notebook astar_analysis.ipynb
 
 ## Seções do Notebook
 
-### Seção 0 — Dependências e Configuração
-Instala os pacotes necessários e define as constantes globais do projeto: caminhos dos CSVs, cores, marcadores, número de threads por abordagem e parâmetros visuais dos gráficos.
-
-> **Ponto de atenção:** se os CSVs estiverem em outra pasta, altere as variáveis `CSV_SERIAL`, `CSV_BIDIRECIONAL`, `CSV_HDA` e `CSV_PBNF` nesta seção antes de executar o restante.
-
----
-
 ### Seção 1 — Carregamento e Preparação dos Dados
+Instala os pacotes necessários e define as constantes globais do projeto: caminhos dos CSVs, cores, marcadores, número de threads por abordagem e parâmetros visuais dos gráficos.
 Lê os quatro CSVs, padroniza os tipos, extrai o tamanho do grid e calcula as estatísticas agregadas para cada combinação de abordagem, grid e densidade de obstáculos:
-
+> **Ponto de atenção:** se os CSVs estiverem em outra pasta, altere as variáveis `CSV_SERIAL`, `CSV_BIDIRECIONAL`, `CSV_HDA` e `CSV_PBNF` nesta seção antes de executar o restante.
+> 
 - **Média e desvio padrão** de tempo, nós expandidos e custo
 - **Speedup** = T_serial / T_paralela (por grid e obstáculo)
 - **Eficiência** = Speedup / Nº de threads
