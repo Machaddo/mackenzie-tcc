@@ -1,14 +1,11 @@
 
 # Análise Comparativa de Algoritmos A* Paralelos
 ### Estudo sobre Paralelização do Algoritmo A* em Arquiteturas de Memória Compartilhada
-**Universidade Presbiteriana Mackenzie — Faculdade de Computação e Informática**
-
 ---
 
 ## Visão Geral
 
-Este repositório contém o notebook Python e os dados experimentais do artigo **"Estudo sobre a Paralelização do Algoritmo A* em Arquiteturas de Memória Compartilhada"**, desenvolvido como Trabalho de Conclusão de Curso (TCC II) na FCI Mackenzie.
-
+Este repositório contém o notebook Python e os dados experimentais do TCC.
 O objetivo central é comparar o desempenho de quatro abordagens do algoritmo A* em grids bidimensionais de grande escala:
 
 | Abordagem | Tipo | Threads |
@@ -90,26 +87,21 @@ jupyter notebook astar_analysis.ipynb
 
 | Componente | Especificação |
 |---|---|
-| Processador | Intel Core i5 — 16 vCPUs |
-| Memória RAM | 16 GB DDR4 1600 MHz |
+| Processador | Intel Core i5-12450H (4 Performance Cores, 4 Efficiency Cores, 12 Threads) |
+| Memória RAM | 16 GB RAM DDR4 1600 MHz |
 | Sistema Operacional | Windows 11 |
-| Linguagem / Compilador | C++ com flag `-O3` |
-| Biblioteca paralela | OpenMP 4.5 |
+| Linguagem / Compilador | C++, GCC em MinGW-w64 (-03) |
+| Biblioteca paralela | OpenMP 4.5  |
 
 ---
 
 ## Seções do Notebook
 
-### Seção 0 — Dependências e Configuração
-Instala os pacotes necessários e define as constantes globais do projeto: caminhos dos CSVs, cores, marcadores, número de threads por abordagem e parâmetros visuais dos gráficos.
-
-> **Ponto de atenção:** se os CSVs estiverem em outra pasta, altere as variáveis `CSV_SERIAL`, `CSV_BIDIRECIONAL`, `CSV_HDA` e `CSV_PBNF` nesta seção antes de executar o restante.
-
----
-
 ### Seção 1 — Carregamento e Preparação dos Dados
+Instala os pacotes necessários e define as constantes globais do projeto: caminhos dos CSVs, cores, marcadores, número de threads por abordagem e parâmetros visuais dos gráficos.
 Lê os quatro CSVs, padroniza os tipos, extrai o tamanho do grid e calcula as estatísticas agregadas para cada combinação de abordagem, grid e densidade de obstáculos:
-
+> **Ponto de atenção:** se os CSVs estiverem em outra pasta, altere as variáveis `CSV_SERIAL`, `CSV_BIDIRECIONAL`, `CSV_HDA` e `CSV_PBNF` nesta seção antes de executar o restante.
+> 
 - **Média e desvio padrão** de tempo, nós expandidos e custo
 - **Speedup** = T_serial / T_paralela (por grid e obstáculo)
 - **Eficiência** = Speedup / Nº de threads
@@ -227,7 +219,3 @@ Boxplot das 20 execuções individuais por abordagem e por densidade de obstácu
 - HOLTE et al. Bidirectional search that is guaranteed to meet in the middle. *AAAI*, 2016.
 - RUSSELL; NORVIG. *Inteligência Artificial*. 3. ed. LTC, 2021.
 - PACHECO. *An Introduction to Parallel Programming*. Morgan Kaufmann, 2011.
-
----
-
-*Universidade Presbiteriana Mackenzie — Faculdade de Computação e Informática — 2026*
