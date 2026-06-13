@@ -222,7 +222,3 @@ Boxplot das 20 execuções individuais por abordagem e por densidade de obstácu
 - HOLTE et al. Bidirectional search that is guaranteed to meet in the middle. *AAAI*, 2016.
 - RUSSELL; NORVIG. *Inteligência Artificial*. 3. ed. LTC, 2021.
 - PACHECO. *An Introduction to Parallel Programming*. Morgan Kaufmann, 2011.
-
----
-
-*Universidade Presbiteriana Mackenzie — Faculdade de Computação e Informática — 2026*
