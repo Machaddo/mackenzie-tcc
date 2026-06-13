@@ -90,11 +90,11 @@ jupyter notebook astar_analysis.ipynb
 
 | Componente | Especificação |
 |---|---|
-| Processador | Intel Core i5 — 16 vCPUs |
-| Memória RAM | 16 GB DDR4 1600 MHz |
+| Processador | Intel Core i5-12450H (4 Performance Cores, 4 Efficiency Cores, 12 Threads) |
+| Memória RAM | 16 GB RAM DDR4 1600 MHz |
 | Sistema Operacional | Windows 11 |
-| Linguagem / Compilador | C++ com flag `-O3` |
-| Biblioteca paralela | OpenMP 4.5 |
+| Linguagem / Compilador | C++, GCC em MinGW-w64 (-03) |
+| Biblioteca paralela | OpenMP 4.5  |
 
 ---
 
