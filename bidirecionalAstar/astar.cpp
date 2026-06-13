@@ -1,6 +1,4 @@
 // Compilar com: g++ astar.cpp -o astar.exe -fopenmp -O2 -std=c++17
-// Requer MinGW-w64 (MSYS2) ou qualquer compilador moderno com suporte a C++17 e OpenMP.
-
 #include <iostream>
 #include <vector>
 #include <queue>
@@ -15,7 +13,7 @@
 
 using namespace std;
 
-// ========================= Config =========================
+// Config
 int test_num = 1;
 const int num_trials = 20;
 
@@ -23,7 +21,7 @@ std::string basePath = "gridsTeste/";
 std::vector<int> sizes     = {5000, 6000, 7000};
 std::vector<int> densities = {0, 10, 20, 30};
 
-// ========================= Structs =========================
+//Structs 
 struct Node {
     int x, y;
     int f, g, h;
@@ -34,7 +32,7 @@ struct CompareNode {
     bool operator()(const Node* a, const Node* b) const { return a->f > b->f; }
 };
 
-// FIX: Métricas encapsuladas em struct — sem globais, thread-safe por design
+// Métricas
 struct Metrics {
     long long expandedNodes    = 0;
     long long neighborsChecked = 0;
@@ -49,10 +47,7 @@ struct GridInfo {
     int obstaclePercentage;
 };
 
-// ========================= Helpers =========================
-
-// FIX: Array flat 1D para localidade de cache — substitui vector<vector<>>
-// Acesso: grid[x * gridY + y] ao invés de grid[x][y]
+// Helpers 
 inline int flat(int x, int y, int W) { return x * W + y; }
 
 bool loadGridFromFile(const std::string& fn,
@@ -75,10 +70,7 @@ bool isValid(int x, int y, int gX, int gY) {
     return x >= 0 && x < gX && y >= 0 && y < gY;
 }
 
-// FIX: Heurística octile — admissível para movimento 8-direcional com custos 10/14.
-// Manhattan era inadmissível para diagonais: podia superestimar o custo real
-// e quebrar a garantia de caminho ótimo do A*.
-//
+// Heurística octile — admissível para movimento 8-direcional com custos 10/14.
 // Fórmula: 10*(dx+dy) - 6*min(dx,dy)
 // O custo real de (dx,dy) movimentos é: 14*min(dx,dy) + 10*(max-min)
 // A heurística iguala esse custo quando não há obstáculos → admissível e consistente.
@@ -93,7 +85,7 @@ void initNodes(std::vector<Node>& nodes, int gX, int gY) {
         for (int j = 0; j < gY; ++j) {
             auto& n = nodes[flat(i, j, gY)];
             n.x = i; n.y = j;
-            n.f = n.g = n.h = INT_MAX / 2; // /2 para evitar overflow em adições
+            n.f = n.g = n.h = INT_MAX / 2; //2 para evitar overflow em adições
             n.parent_x = n.parent_y = -1;
         }
 }
@@ -101,12 +93,9 @@ void initNodes(std::vector<Node>& nodes, int gX, int gY) {
 const int DX[] = {-1, -1, -1,  0,  0,  1,  1,  1};
 const int DY[] = {-1,  0,  1, -1,  1, -1,  0,  1};
 
-// ========================= Bidirectional A* =========================
+// Bidirectional A* 
 //
 // ABORDAGEM DE PARALELIZAÇÃO:
-// Em vez de paralelizar os 8 vizinhos de um único nó (granularidade muito fina,
-// custo de lançar threads > custo de verificar 8 vizinhos), usamos Bidirectional A*:
-//
 //   Thread 1: Busca FORWARD  — expande do start em direção ao end
 //   Thread 2: Busca BACKWARD — expande do end   em direção ao start
 //
@@ -121,15 +110,11 @@ const int DY[] = {-1,  0,  1, -1,  1, -1,  0,  1};
 //   - Closed lists: std::atomic<bool> por slot.
 //     Escrita com memory_order_release, leitura com memory_order_acquire.
 //     Garante que o valor de 'g' escrito antes do release seja visível
-//     para a thread que faz o acquire — sem lock.
-//
+//     para a thread que faz o acquire —sem lock.
 //   - bestCost: atualizado via compare_exchange_weak (CAS lock-free).
-//
-//   - meetX / meetY: protegidos por omp_lock_t apenas na escrita
-//     (seção raramente executada — sem impacto relevante na performance).
-//
+//   - meetX / meetY: protegidos por omp_lock_t apenas na escrita.
 //   - searchDone / topFFwd / topFBwd: std::atomic<int> com relaxed ordering.
-//     Usados apenas para a condição de término; consistência eventual é suficiente.
+//     Usados apenas para a condição de término
 
 std::vector<std::pair<int,int>> biAStarSearch(
     const std::vector<int>& grid,
@@ -226,7 +211,7 @@ std::vector<std::pair<int,int>> biAStarSearch(
             int currentNodeIndex = flat(cur->x, cur->y, gridHeight);
             if (myClosed[currentNodeIndex].load(std::memory_order_relaxed)) continue;
 
-            // Release: garante visibilidade do g deste nó para a outra thread
+            // garante visibilidade do g deste nó para a outra thread
             // após ela fazer acquire-load de myClosed[currentNodeIndex].
             myClosed[currentNodeIndex].store(true, std::memory_order_release);
             m.expandedNodes++;
@@ -306,8 +291,8 @@ std::vector<std::pair<int,int>> biAStarSearch(
     int meetingX = meetX, meetingY = meetY;
     if (meetingX == -1) return {};
 
-    // --- Reconstrução do caminho ---
-    // Parte forward: meeting → start via parents de forwardNodes, depois invertida
+    // Reconstrução do caminho 
+    // Parte forward: meeting start via parents de forwardNodes, depois invertida
     std::vector<std::pair<int,int>> pathFwd;
     for (int currentX = meetingX, currentY = meetingY; currentX != -1; ) {
         pathFwd.push_back({currentX, currentY});
@@ -318,7 +303,6 @@ std::vector<std::pair<int,int>> biAStarSearch(
     std::reverse(pathFwd.begin(), pathFwd.end()); // start → meeting
 
     // Parte backward: parent do meeting em backwardNodes → end
-    // (meeting já está em pathFwd — começa pelo parent para não duplicar)
     std::vector<std::pair<int,int>> pathBwd;
     {
         const Node& meetingNodeBackward = backwardNodes[flat(meetingX, meetingY, gridHeight)];
@@ -336,12 +320,11 @@ std::vector<std::pair<int,int>> biAStarSearch(
     fullPath.insert(fullPath.end(), pathBwd.begin(), pathBwd.end());
 
     metrics.pathCost   = bestCost.load();
-    // FIX: pathLength conta todos os nós do caminho, incluindo start e end
     metrics.pathLength = (int)fullPath.size();
     return fullPath;
 }
 
-// ========================= Visualização =========================
+//  Visualização 
 void visualizePath(const std::vector<int>& grid,
                    const std::vector<std::pair<int,int>>& path,
                    int sX, int sY, int eX, int eY,
@@ -363,7 +346,7 @@ void visualizePath(const std::vector<int>& grid,
     std::cout << '\n';
 }
 
-// ========================= CSV =========================
+// CSV 
 std::ofstream abrirCSV(const std::string& path) {
     std::ofstream f(path, std::ios::app);
     if (!f) { std::cerr << "Erro ao abrir CSV: " << path << "\n"; exit(1); }
@@ -414,7 +397,6 @@ std::vector<GridInfo> getGrids() {
     return grids;
 }
 
-// ========================= Main =========================
 int main() {
     auto grids = getGrids();
     auto csv   = abrirCSV("results/parallel_bidirectional.csv") ;
